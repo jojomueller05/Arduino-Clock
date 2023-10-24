@@ -6,7 +6,10 @@
 //get the RTClib library
 #include <SD.h>
 #include <ArduinoJson.h>
+#include <Wire.h>
 
-
+void getJsonData(String dataArray[]);
+void updateJson(String date, String time);
+String getFileContent(String filename);
 
 #endif

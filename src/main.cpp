@@ -13,6 +13,7 @@
 //Own Modules:
 #include "LCD.h"
 #include "RTC.h"
+#include "MICROSD.h"
 
 //LCD settings:
 rgb_lcd lcd;
@@ -21,7 +22,10 @@ const int colorG = 81;
 const int colorB = 209;
 
 //rtc settings:
-RTC_DS3231 rtc; 
+RTC_DS3231 rtc;
+
+//SD Card settigns:
+const int SDCARD = 4;
 
 void setup() {
   // put your setup code here, to run once:
@@ -39,6 +43,12 @@ void setup() {
       Serial.println("RTC konnte nicht initialisiert werden!");
       while (1);
     }
+
+  // SD card init:
+  if (!SD.begin(SDCARD)) {
+    Serial.println("SD-Karte konnte nicht initialisiert werden.");
+    while (1);
+  }
   
 }
 
@@ -46,17 +56,22 @@ void loop() {
   // put your main code here, to run repeatedly:
   //Serial.println("Hello World");
 
-  //get date
+  //LCD Screen:
+  //get date:
   char timeChar[6];
   getCurrentTime(timeChar);
 
-  //get time
+  //get time:
   char dateChar[11];
   getCurrentDate(dateChar);
   
-  //updateLCD Screen
+  //updateLCD Screen:
   updateLCD(timeChar, dateChar, true);
 
-
+  //getJsonData:
+  String settings[2];
+  getJsonData(settings);
+  
+ 
 }
 
