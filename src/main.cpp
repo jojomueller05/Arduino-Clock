@@ -27,6 +27,12 @@ RTC_DS3231 rtc;
 //SD Card settigns:
 const int SDCARD = 4;
 
+//BUZZER Settings:
+const int BUZZER = 5;
+
+//ALARMBUTTON Settings:
+const int ALARMBUTTON = 6;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -57,11 +63,11 @@ void loop() {
   //Serial.println("Hello World");
 
   //LCD Screen:
-  //get date:
+  //get current date:
   char timeChar[6];
   getCurrentTime(timeChar);
 
-  //get time:
+  //get current time:
   char dateChar[11];
   getCurrentDate(dateChar);
   
@@ -72,6 +78,22 @@ void loop() {
   String settings[2];
   getJsonData(settings);
   
- 
+  //settings date & time
+  String dateString = settings[0];
+  String timeString = settings[1];
+  
+  // if settings == now run buzzer until button clicked.
+  if (dateChar == dateString && timeChar == timeString){
+    if (digitalRead(ALARMBUTTON) == LOW){
+      //run buzzer
+      digitalWrite(BUZZER, HIGH);
+      delay(1000);
+      digitalWrite(BUZZER, LOW);
+      delay(1000);
+    }
+
+  }
+
+  
 }
 
