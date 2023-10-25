@@ -9,7 +9,7 @@
 #include <Wire.h>
 
 void getJsonData(String dataArray[]);
-void updateJson(String date, String time);
+void updateJson(String date, String time, bool isSet);
 String getFileContent(String filename);
 
 #endif

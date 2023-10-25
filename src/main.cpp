@@ -56,11 +56,12 @@ void setup() {
     while (1);
   }
   
+  //button Setip
+  pinMode(ALARMBUTTON, INPUT_PULLUP);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  //Serial.println("Hello World");
 
   //LCD Screen:
   //get current date:
@@ -71,29 +72,47 @@ void loop() {
   char dateChar[11];
   getCurrentDate(dateChar);
   
-  //updateLCD Screen:
-  updateLCD(timeChar, dateChar, true);
-
   //getJsonData:
-  String settings[2];
+  String settings[3];
   getJsonData(settings);
   
   //settings date & time
   String dateString = settings[0];
   String timeString = settings[1];
+  String clockSet = settings[2];
+
   
+  if (clockSet == "true"){
+    //updateLCD Screen:
+    updateLCD(timeChar, dateChar, true);    
+  } else {
+      //updateLCD Screen:
+      updateLCD(timeChar, dateChar, false);
+  }
+
   // if settings == now run buzzer until button clicked.
-  if (dateChar == dateString && timeChar == timeString){
-    if (digitalRead(ALARMBUTTON) == LOW){
+  if (String(dateChar) == dateString && String(timeChar) == timeString && clockSet == "true"){
+
+    while (digitalRead(ALARMBUTTON) == HIGH){
       //run buzzer
       digitalWrite(BUZZER, HIGH);
       delay(1000);
       digitalWrite(BUZZER, LOW);
       delay(1000);
+      Serial.println();
+      Serial.println("Buzzer is runing");
+      Serial.println(); 
     }
+        
+      Serial.println();
+      Serial.println("Button pressed!");
+      Serial.println();   
 
+      updateJson(dateString, timeString, false);
   }
 
   
+
+
 }
 
