@@ -7,9 +7,13 @@
 #include <SD.h>
 #include <ArduinoJson.h>
 #include <Wire.h>
+#include <WiFiNINA.h>
 
 void getJsonData(String dataArray[]);
 void updateJson(String date, String time, bool isSet);
-String getFileContent(String filename);
+void getFileContent(const char *filename, WiFiClient &client);
+
+String formatDate(String inputDate);
+String formatTime(String inputTime);
 
 #endif

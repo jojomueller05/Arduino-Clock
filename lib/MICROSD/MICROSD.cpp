@@ -47,22 +47,38 @@ void updateJson(String date, String time, bool isSet) {
 }
 
 
-String getFileContent(String filename) {
-  String fileContent = "";
-
+void getFileContent(const char *filename, WiFiClient &client) {
   File file = SD.open(filename);
-
-  if (file) {
-    while (file.available()) {
-      char c = file.read();
-      fileContent += c;
-    }
-
-    file.close();
-  } else {
-    // Fehler beim Öffnen der Datei
-    fileContent = "Error: Couldn't read file!";
+  if (!file) {
+    Serial.println("Error: Couldn't read file!");
   }
 
-  return fileContent;
+  // Lese und sende die Datei schrittweise in kleinen Teilen
+  const int bufferSize = 64;
+  char buffer[bufferSize];
+  while (file.available()) {
+    int bytesRead = file.readBytes(buffer, bufferSize);
+    client.write(buffer, bytesRead); // Sende den Puffer an den Client
+  }
+
+  file.close();
+}
+
+String formatDate(String inputDate) {
+  // Zerlege den Eingangsstring in Jahr, Monat und Tag
+  int year = inputDate.substring(0, 4).toInt();
+  int month = inputDate.substring(5, 7).toInt();
+  int day = inputDate.substring(8).toInt();
+
+  // Erzeuge einen neuen formatierten String
+  String formattedDate = String(day) + "." + String(month) + "." + String(year);
+
+  return formattedDate;
+}
+
+String formatTime(String inputTime) {
+  // Ersetze %3A durch :
+  inputTime.replace("%3A", ":");
+
+  return inputTime;
 }
