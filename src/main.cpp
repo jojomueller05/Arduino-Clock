@@ -109,6 +109,10 @@ void loop() {
       Serial.println();   
 
       updateJson(dateString, timeString, false);
+
+    // if date and time is set but "set" is false make it true again (for next day)
+  } else if (dateString != "" && timeString != "" && clockSet == "false"){
+    updateJson(dateString, timeString, true);
   }
 
   
