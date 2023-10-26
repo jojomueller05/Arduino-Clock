@@ -83,11 +83,17 @@ String formatDate(String inputDate) {
   int month = inputDate.substring(5, 7).toInt();
   int day = inputDate.substring(8).toInt();
 
+  // Füge führende Nullen hinzu, wenn der Tag oder Monat einstellig ist
+  String formattedDay = (day < 10) ? "0" + String(day) : String(day);
+  String formattedMonth = (month < 10) ? "0" + String(month) : String(month);
+
   // Erzeuge einen neuen formatierten String
-  String formattedDate = String(day) + "." + String(month) + "." + String(year);
+  String formattedDate = formattedDay + "." + formattedMonth + "." + String(year);
 
   return formattedDate;
 }
+
+
 
 String formatTime(String inputTime) {
   // Ersetze %3A durch :
