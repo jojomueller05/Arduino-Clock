@@ -193,22 +193,35 @@ void loop() {
   }
 
   // Hier lesen wir den HTTP-Body (Request-Daten)
-  String body = client.readStringUntil('\r'); // Lies die Daten bis zum Ende des Requests
+String body = client.readStringUntil('\r'); // Lies die Daten bis zum Ende des Requests
 
-  // Analysiere die POST-Daten, um date und time zu extrahieren
-  String dateValue = "";
-  String timeValue = "";
-  int dataIndex = body.indexOf("date=");
-  int timeIndex = body.indexOf("time=");
-  if (dataIndex != -1 && timeIndex != -1) {
+// Analysiere die POST-Daten, um date, time und set zu extrahieren
+String dateValue = "";
+String timeValue = "";
+String setString = "";
+bool setValue = false;
+int dataIndex = body.indexOf("date=");
+int timeIndex = body.indexOf("time=");
+int setIndex = body.indexOf("set=");
+
+if (dataIndex != -1 && timeIndex != -1 && setIndex != -1) {
     dateValue = body.substring(dataIndex + 5, timeIndex - 1);
-    timeValue = body.substring(timeIndex + 5);
-  }
+    timeValue = body.substring(timeIndex + 5, setIndex - 1);
+    setString = body.substring(setIndex + 4);
+    
+    
+    // Umwandeln von "setString" in einen boolschen Wert
+    if (setString.equalsIgnoreCase("true")) {
+        setValue = true;
+    }
+}
 
   // Gib die extrahierten Daten aus
   Serial.println("Date: " + dateValue);
   Serial.println("Time: " + timeValue);
-
+  Serial.println("Set:" + setString);
+  
+  //Format date and time:
   String validDateString = formatDate(dateValue);
   String validTimeString = formatTime(timeValue);
 
@@ -216,10 +229,10 @@ void loop() {
   Serial.println("Date: " + validDateString);
   Serial.println("Time: " + validTimeString);
 
-  updateJson(validDateString, validTimeString, true);
+  updateJson(validDateString, validTimeString, setValue);
   // Sende eine HTTP-Weiterleitung und beende die Verbindung
   client.println("HTTP/1.1 302 Found");
-  client.println("Location: /");
+  client.println("Location: /?error=none");
   client.println();
   client.stop();
 }
