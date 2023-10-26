@@ -7,7 +7,7 @@
 #include "rgb_lcd.h"
 #include <RTClib.h> 
 #include <SD.h> 
-#include <ArduinoJson.h> 
+#include <ArduinoJson.h>
 
 
 //Own Modules:
@@ -140,18 +140,24 @@ void loop() {
       delay(1000);
       Serial.println();
       Serial.println("Buzzer is runing");
-      Serial.println(); 
+      Serial.println();
+ 
     }
-        
+
+    if (digitalRead(ALARMBUTTON) == LOW){
       Serial.println();
       Serial.println("Button pressed!");
-      Serial.println();   
-
+      Serial.println();
       updateJson(dateString, timeString, false);
+    }        
+ 
 
-    // if date and time is set but "set" is false make it true again (for next day)
+    // if there is a date and time value but clock isn't set
   } else if (dateString != "" && timeString != "" && clockSet == "false"){
-    updateJson(dateString, timeString, true);
+    
+    // if current date and time doesn't match config 
+      dateString = incrementDate(dateString);
+      updateJson(dateString, timeString, true);
   }
 
   //webserver routing:

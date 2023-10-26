@@ -101,3 +101,36 @@ String formatTime(String inputTime) {
 
   return inputTime;
 }
+
+String incrementDate(String inputDate) {
+  // Zerlege den Eingangsstring in Tag, Monat und Jahr
+  int day, month, year;
+  if (sscanf(inputDate.c_str(), "%d.%d.%d", &day, &month, &year) != 3) {
+    // Fehler bei der Konvertierung des Datums
+    return "Invalid Date";
+  }
+
+  // Ermitteln der Anzahl Tage in jedem Monat
+  int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+  // Überprüfen, ob das Jahr ein Schaltjahr ist
+  bool isLeapYear = ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
+
+  // Überprüfen, ob ein Monatswechsel erfolgt
+  if (day == daysInMonth[month] && !(month == 2 && day == 29 && isLeapYear)) {
+    day = 1;
+    month++;
+    if (month > 12) {
+      month = 1;
+      year++;
+    }
+  } else {
+    day++;
+  }
+
+  // Erzeuge einen neuen formatierten String
+  char formattedDate[11];
+  snprintf(formattedDate, sizeof(formattedDate), "%02d.%02d.%04d", day, month, year);
+
+  return String(formattedDate);
+}

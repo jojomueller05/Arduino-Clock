@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-//get the RTClib library
+//get the libraries
 #include <SD.h>
 #include <ArduinoJson.h>
 #include <Wire.h>
@@ -15,5 +15,6 @@ void getFileContent(const char *filename, WiFiClient &client);
 
 String formatDate(String inputDate);
 String formatTime(String inputTime);
+String incrementDate(String inputDate);
 
 #endif
