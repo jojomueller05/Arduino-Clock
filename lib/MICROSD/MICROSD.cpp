@@ -27,14 +27,26 @@ void getJsonData(String dataArray[]) {
 
 
 void updateJson(String date, String time, bool isSet) {
-    StaticJsonDocument<256> doc;
-    doc["date"] = date;
-    doc["time"] = time;
-    doc["set"] = isSet;
-
-    File file = SD.open("settings.txt", O_WRITE);
+    // Schritt 1: Datei öffnen
+    File file = SD.open("settings.txt", FILE_WRITE | O_TRUNC);
 
     if (file) {
+
+        file.close();
+    } else {
+        Serial.println("Konnte settings.txt nicht öffnen!");
+        return;
+    }
+
+    // Schritt 5: Die Datei erneut öffnen und Daten schreiben
+    file = SD.open("settings.txt", FILE_WRITE);
+
+    if (file) {
+        StaticJsonDocument<256> doc;
+        doc["date"] = date;
+        doc["time"] = time;
+        doc["set"] = isSet;
+
         if (serializeJson(doc, file) == 0) {
             Serial.println("Fehler beim Schreiben der JSON-Datei!");
         } else {
@@ -45,6 +57,7 @@ void updateJson(String date, String time, bool isSet) {
         Serial.println("Konnte settings.txt nicht öffnen!");
     }
 }
+
 
 
 void getFileContent(const char *filename, WiFiClient &client) {
