@@ -99,6 +99,36 @@ void setup() {
 
 }
 
+void updateLCDScreen(){
+    // put your main code here, to run repeatedly:
+
+  //LCD Screen:
+  //get current date:
+  char timeChar[6];
+  getCurrentTime(timeChar);
+
+  //get current time:
+  char dateChar[11];
+  getCurrentDate(dateChar);
+  
+  //getJsonData:
+  String settings[3];
+  getJsonData(settings);
+  
+  //settings date & time
+  String dateString = settings[0];
+  String timeString = settings[1];
+  String clockSet = settings[2];
+
+  
+  if (clockSet == "true"){
+    //updateLCD Screen:
+    updateLCD(timeChar, dateChar, true);    
+  } else {
+      //updateLCD Screen:
+      updateLCD(timeChar, dateChar, false);
+  }
+}
 void loop() {
   // put your main code here, to run repeatedly:
 
@@ -141,6 +171,8 @@ void loop() {
       Serial.println();
       Serial.println("Buzzer is runing");
       Serial.println();
+      //update lcd screen
+      updateLCDScreen();
  
     }
 
