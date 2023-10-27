@@ -11,5 +11,5 @@ extern RTC_DS3231 rtc;
 
 void getCurrentTime(char timeChar[6]);
 void getCurrentDate(char dateChar[11]);
-
+void setRTCDateTime(RTC_DS3231 rtc, String date, String time);
 #endif

@@ -242,6 +242,61 @@ if (dataIndex != -1 && timeIndex != -1 && setIndex != -1) {
   client.println();
   client.stop();
 }
+else if (request.indexOf("GET /settings") != -1) {
+  // Wenn die Anforderung ein GET auf / ist, HTML zurückgeben
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println();
+
+  getFileContent("settings.htm", client);
+
+  // Schließe die Verbindung zum Client
+  client.stop();
+
+} else if (request.indexOf("POST /settings") != -1) {
+    // Dies ist eine POST-Anfrage
+
+    // Jetzt liest du den Body der Anfrage
+    String body = "";
+    bool bodyStarted = false;
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        if (bodyStarted) {
+          body += c;
+        }
+        if (c == '\n' && !bodyStarted) {
+          bodyStarted = true;
+        }
+      }
+    }
+
+    // Hier kannst du die Daten aus dem Body extrahieren und verwenden
+    // Zum Beispiel, Extrahiere die "date" und "time" POST-Parameter
+    int dateIndex = body.indexOf("date=");
+    int timeIndex = body.indexOf("time=");
+
+    if (dateIndex != -1 && timeIndex != -1) {
+      String dateValue = body.substring(dateIndex + 5, timeIndex - 1);
+      String timeValue = body.substring(timeIndex + 5);
+      
+      // Jetzt kannst du die Daten verwenden, wie du möchtest
+      Serial.println("Date: " + dateValue);
+      Serial.println("Time: " + timeValue);
+      
+      //Format date and time:
+      String validDateString = formatDate(dateValue);
+      String validTimeString = formatTime(timeValue);
+      
+      //change RTC time
+      setRTCDateTime(rtc, validDateString, validTimeString);
+      
+      // Leite den Client auf eine andere Seite weiter (z.B. /success)
+      client.println("HTTP/1.1 302 Found");
+      client.println("Location: /?error=none");
+      client.println();
+    }
+  }
 else {
       client.println("HTTP/1.1 404 Not Found");
       client.println("Content-Type: text/html");
