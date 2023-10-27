@@ -199,7 +199,7 @@ void loop() {
     Serial.println("Neuer Client verbunden");
     String request = client.readStringUntil('\r');
 
-    if (request.indexOf("GET /") != -1) {
+    if (request.indexOf("GET / ") != -1 || request.indexOf("GET /?error=none ") != -1) {
   // Wenn die Anforderung ein GET auf / ist, HTML zurückgeben
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
@@ -209,14 +209,28 @@ void loop() {
 
   // Schließe die Verbindung zum Client
   client.stop();
-} else if (request.indexOf("POST /get-data") != -1) {
+}
+else if (request.indexOf("GET /settings ") != -1 || request.indexOf("GET /settings?error=none ") != -1) {
+        // Wenn die Anforderung ein GET auf /settings ist, HTML zurückgeben
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/html");
+        client.println();
+
+        getFileContent("settings.htm", client);
+
+        // Schließe die Verbindung zum Client
+        client.stop();
+    }
+
+ else if (request.indexOf("POST /get-data ") != -1) {
     // Wenn die Anforderung ein POST auf /get-data ist, JSON zurückgeben
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: application/json");
     client.println();
 
     getFileContent("settings.txt", client);
-} else if (request.indexOf("POST /") != -1) {
+    
+} else if (request.indexOf("POST / ") != -1) {
   // Wenn die Anforderung ein POST auf / ist
   // Hier analysieren wir den HTTP-Header, um die POST-Daten zu extrahieren
   int contentLength = 0;
@@ -274,61 +288,57 @@ if (dataIndex != -1 && timeIndex != -1 && setIndex != -1) {
   client.println();
   client.stop();
 }
-else if (request.indexOf("GET /settings") != -1) {
-  // Wenn die Anforderung ein GET auf / ist, HTML zurückgeben
-  client.println("HTTP/1.1 200 OK");
-  client.println("Content-Type: text/html");
-  client.println();
-
-  getFileContent("settings.htm", client);
-
-  // Schließe die Verbindung zum Client
-  client.stop();
-
-} else if (request.indexOf("POST /settings") != -1) {
-    // Dies ist eine POST-Anfrage
-
-    // Jetzt liest du den Body der Anfrage
-    String body = "";
-    bool bodyStarted = false;
-    while (client.connected()) {
-      if (client.available()) {
-        char c = client.read();
-        if (bodyStarted) {
-          body += c;
-        }
-        if (c == '\n' && !bodyStarted) {
-          bodyStarted = true;
-        }
-      }
+ else if (request.indexOf("POST /settings ") != -1) {
+  // Wenn die Anforderung ein POST auf / ist
+  // Hier analysieren wir den HTTP-Header, um die POST-Daten zu extrahieren
+  int contentLength = 0;
+  while (client.connected()) {
+    String line = client.readStringUntil('\n');
+    if (line.startsWith("Content-Length: ")) {
+      contentLength = line.substring(16).toInt();
     }
-
-    // Hier kannst du die Daten aus dem Body extrahieren und verwenden
-    // Zum Beispiel, Extrahiere die "date" und "time" POST-Parameter
-    int dateIndex = body.indexOf("date=");
-    int timeIndex = body.indexOf("time=");
-
-    if (dateIndex != -1 && timeIndex != -1) {
-      String dateValue = body.substring(dateIndex + 5, timeIndex - 1);
-      String timeValue = body.substring(timeIndex + 5);
-      
-      // Jetzt kannst du die Daten verwenden, wie du möchtest
-      Serial.println("Date: " + dateValue);
-      Serial.println("Time: " + timeValue);
-      
-      //Format date and time:
-      String validDateString = formatDate(dateValue);
-      String validTimeString = formatTime(timeValue);
-      
-      //change RTC time
-      setRTCDateTime(rtc, validDateString, validTimeString);
-      
-      // Leite den Client auf eine andere Seite weiter (z.B. /success)
-      client.println("HTTP/1.1 302 Found");
-      client.println("Location: /?error=none");
-      client.println();
+    if (line == "\r") {
+      break; // Leerzeile am Ende des Headers
     }
   }
+
+// Hier lesen wir den HTTP-Body (Request-Daten)
+String body = client.readStringUntil('\r'); // Lies die Daten bis zum Ende des Requests
+
+ // Analysiere die POST-Daten, um date, time und set zu extrahieren
+String dateValue = "";
+String timeValue = "";
+
+int dataIndex = body.indexOf("date=");
+int timeIndex = body.indexOf("time=");
+
+
+if (dataIndex != -1 && timeIndex != -1) {
+    dateValue = body.substring(dataIndex + 5, timeIndex - 1);
+    timeValue = body.substring(timeIndex + 5);
+}
+
+  // Gib die extrahierten Daten aus
+  Serial.println("Date: " + dateValue);
+  Serial.println("Time: " + timeValue);
+
+  
+  //Format date and time:
+  String validDateString = formatDate(dateValue);
+  String validTimeString = formatTime(timeValue);
+
+  // Gib die extrahierten, neuen Daten aus
+  Serial.println("Date: " + validDateString);
+  Serial.println("Time: " + validTimeString);
+
+  setRTCDateTime(rtc, validDateString, validTimeString);
+  // Sende eine HTTP-Weiterleitung und beende die Verbindung
+  client.println("HTTP/1.1 302 Found");
+  client.println("Location: /settings?error=none");
+  client.println();
+  client.stop();
+}
+
 else {
       client.println("HTTP/1.1 404 Not Found");
       client.println("Content-Type: text/html");

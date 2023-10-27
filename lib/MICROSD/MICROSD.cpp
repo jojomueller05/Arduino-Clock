@@ -64,6 +64,11 @@ void getFileContent(const char *filename, WiFiClient &client) {
   File file = SD.open(filename);
   if (!file) {
     Serial.println("Error: Couldn't read file!");
+    client.println("HTTP/1.1 404 Not Found");
+    client.println("Content-Type: text/html");
+    client.println();
+    client.println("File not found.");
+    return;
   }
 
   // Lese und sende die Datei schrittweise in kleinen Teilen
@@ -76,6 +81,7 @@ void getFileContent(const char *filename, WiFiClient &client) {
 
   file.close();
 }
+
 
 String formatDate(String inputDate) {
   // Zerlege den Eingangsstring in Jahr, Monat und Tag
