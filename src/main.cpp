@@ -343,7 +343,7 @@ else {
       client.println("HTTP/1.1 404 Not Found");
       client.println("Content-Type: text/html");
       client.println();
-      client.println("<html><body><h1>Nicht gefunden</h1></body></html>");
+      getFileContent("404.htm", client);
     }
 
     client.stop();
