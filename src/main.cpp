@@ -273,6 +273,7 @@ if (dataIndex != -1 && timeIndex != -1 && setIndex != -1) {
   Serial.println("Time: " + timeValue);
   Serial.println("Set:" + setString);
   
+  if (dateValue != "" && timeValue != ""){
   //Format date and time:
   String validDateString = formatDate(dateValue);
   String validTimeString = formatTime(timeValue);
@@ -282,6 +283,13 @@ if (dataIndex != -1 && timeIndex != -1 && setIndex != -1) {
   Serial.println("Time: " + validTimeString);
 
   updateJson(validDateString, validTimeString, setValue);
+
+  } else {
+  
+  updateJson(dateValue, timeValue, setValue);
+
+  }
+
   // Sende eine HTTP-Weiterleitung und beende die Verbindung
   client.println("HTTP/1.1 302 Found");
   client.println("Location: /?error=none");
