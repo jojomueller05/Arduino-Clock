@@ -35,7 +35,7 @@ const int ALARMBUTTON = 6;
 
 //wifi/webserver settings:
 // visit http://192.168.4.1
-char ssid[] = "Arduino Clock";        // Dein Netzwerk-SSID (Name)
+char ssid[] = "SMART CLOCK";        // Dein Netzwerk-SSID (Name)
 char pass[] = "12345678";
 int keyIndex = 0; 
 int status = WL_IDLE_STATUS;
