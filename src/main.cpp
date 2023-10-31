@@ -35,7 +35,7 @@ const int ALARMBUTTON = 6;
 
 //wifi/webserver settings:
 // visit http://192.168.4.1
-char ssid[] = "Arduino Clock";        // Dein Netzwerk-SSID (Name)
+char ssid[] = "SMART CLOCK";        // Dein Netzwerk-SSID (Name)
 char pass[] = "12345678";
 int keyIndex = 0; 
 int status = WL_IDLE_STATUS;
@@ -276,6 +276,7 @@ if (dataIndex != -1 && timeIndex != -1 && setIndex != -1) {
   Serial.println("Time: " + timeValue);
   Serial.println("Set:" + setString);
   
+  if (dateValue != "" && timeValue != ""){
   //Format date and time:
   String validDateString = formatDate(dateValue);
   String validTimeString = formatTime(timeValue);
@@ -285,6 +286,13 @@ if (dataIndex != -1 && timeIndex != -1 && setIndex != -1) {
   Serial.println("Time: " + validTimeString);
 
   updateJson(validDateString, validTimeString, setValue);
+
+  } else {
+  
+  updateJson(dateValue, timeValue, setValue);
+
+  }
+
   // Sende eine HTTP-Weiterleitung und beende die Verbindung
   client.println("HTTP/1.1 302 Found");
   client.println("Location: /?error=none");
@@ -346,7 +354,7 @@ else {
       client.println("HTTP/1.1 404 Not Found");
       client.println("Content-Type: text/html");
       client.println();
-      client.println("<html><body><h1>Nicht gefunden</h1></body></html>");
+      getFileContent("404.htm", client);
     }
 
     client.stop();
