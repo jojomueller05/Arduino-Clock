@@ -28,7 +28,7 @@ RTC_DS3231 rtc;
 const int SDCARD = 4;
 
 //BUZZER Settings:
-const int BUZZER = 5;
+const int BUZZER = 1;
 
 //ALARMBUTTON Settings:
 const int ALARMBUTTON = 6;
@@ -66,6 +66,9 @@ void setup() {
   
   //button init:
   pinMode(ALARMBUTTON, INPUT_PULLUP);
+
+  //BUZZER init:
+  pinMode(BUZZER, OUTPUT);
 
   //wifi / webserver setup:
   if (WiFi.status() == WL_NO_MODULE) {
